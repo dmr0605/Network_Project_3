@@ -1,4 +1,5 @@
 /*
+
 Programming project 3rd
 
 
@@ -27,20 +28,27 @@ static void recvfrom_alarm(int signo);
 
 //define struct parameter 
 struct paramenter{
-	struct sockaddr_in  clientaddr ;
-	int fd ;
-	char * fileName ;
+  struct sockaddr_in  clientaddr;
+  int fd ;
+  char * fileName;
 };
 
 
 //define main function
 int main(){
-  pthread_t tcp_id;
-  pthread_t udp_id;
-  pthread_create(&tcp_id,NULL,(void*)server_download,NULL);
-  pthread_create(&udp_id,NULL,(void*)server,NULL);
+
+  pthread_t tcp_id, udp_id;
+  
+// create a new thread with attributes specified DEFAULT
+  char *message1 = "Thread tcp...";
+  char *message2 = "Thread udp...";
+  int iret1, iret2;
+  iret1 =  pthread_create(&tcp_id,NULL,(void*)server_download, (void *) message1);
+  iret2 =  pthread_create(&udp_id,NULL,(void*)server, (void *) message2);
+
   for(;;){
     int number;
+    //    server();
     number = searchRequest();
     if(number == 0){
       printf("There're no server which named contain keyword entering... \n");
@@ -99,22 +107,33 @@ int searchRequest(){
   serveraddr.sin_port = htons(12345);
   serveraddr.sin_addr.s_addr = inet_addr("255.255.255.255");
 	
-  char fileName[25];
+  char *fn = (char *) malloc (SIZE);
+  if(fn== NULL) {
+    printf ( " Sorry for this convenience but ... Error \n");
+    return 1; // return number differ zero -> error
+  }
   if((sockfd = socket(AF_INET,SOCK_DGRAM,0)) < 0){
     perror("error when create socket");
     return 1; //number signal error creating...
   }
 
   printf("Enter filename for searching.... : \n");
-  scanf("%s",fileName);
-// thiet lap thuoc tinh broadcast cho socket.
+  scanf("%s",fn);
+  printf("Thanks, Your filename is '%s'. Please waiting sending signal time to server \n", fn);
+  printf("Sending ...\n");
+
+
+  // set property broadcast work for socket ...
   const int on = 1;
+
+  // set the option specified by SO_BROADCAST
   setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &on, sizeof(on));
 
 // ham sysv_signal thay the ham signal
   sysv_signal(SIGALRM, recvfrom_alarm);
 
-  nBytes = sendto(sockfd, fileName, strlen(fileName), 0,(struct sockaddr*) &serveraddr , sizeof(serveraddr));
+
+  nBytes = sendto(sockfd, fn, strlen(fn), 0,(struct sockaddr*) &serveraddr , sizeof(serveraddr));
   alarm(5);
   for(;;){
     struct sockaddr_in	preply_addr;
@@ -132,7 +151,7 @@ int searchRequest(){
     }
 
     const char *str;
-    str = (char*)malloc(50);
+    str = (char*)malloc(SIZE);
 
     /*
       function converts the Internet host address in given in network byte order to a string in standard numbers-and-dots notation. The string is returned in a statically allocated buffer, which subsequent calls will overwrite.  
@@ -165,18 +184,26 @@ void server(){
   serveraddr.sin_port = htons(12345);
   serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	// lang nghe ket noi
+  // lang nghe ket noi
   if(bind(fd, (struct sockaddr*) &serveraddr,len_sock_server) < 0){
     perror("could not open socket");
     exit(1);
   }
 
-  for(;;){
+ for(;;){
     pthread_t newThread;
 // nhan ten file tu may khach.
-    char * fileName;
-    fileName = (char*)malloc(25);
-    nBytes = recvfrom(fd, fileName, 25, 0 ,(struct sockaddr*) &clientaddr, (socklen_t*) &len_sock_client);
+    char * fn_server;
+    fn_server = (char*)malloc(SIZE);
+    nBytes = recvfrom(fd, fn_server, SIZE, 0 ,(struct sockaddr*) &clientaddr, (socklen_t*) &len_sock_client);
+    if(fn_server == NULL)
+      {
+	printf (" Error transaction and server can't recieve filename ...\n");
+	return ;
+      }
+
+    printf (" File da nhan dc tu may khach .... '%s'\n", fn_server);
+
     if(nBytes < 0){
       if(errno == EINTR){
 	printf("server : SIGALRM : \n");
@@ -190,8 +217,8 @@ void server(){
 // gan gia tri cho cac thanh phan cua bien cau truc paramenter.
     struct paramenter paramenters;
     paramenters.fd = fd;
-    paramenters.fileName = (char*)malloc(25);
-    strcpy(paramenters.fileName,fileName);
+    paramenters.fileName = (char*)malloc(SIZE);
+    strcpy(paramenters.fileName,fn_server);
     paramenters.clientaddr = clientaddr;
 // tao thread xu li viec tra loi request tu cac may.
     int t = pthread_create(&newThread,NULL,(void*) doit,(void *)&paramenters);
