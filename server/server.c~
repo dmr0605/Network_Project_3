@@ -2,7 +2,9 @@
 
 Programming project 3rd
 Supervisor: Nguyen Hoai Son, PhD
-Author: Hoang Cuong
+Author: Hoang Cuong, Student
+Coltech, VNU
+Ha noi, Viet Nam
 
 */
 
@@ -18,18 +20,18 @@ Author: Hoang Cuong
 #include <errno.h>
 #include <pthread.h>
 
-#define SIZE 1500
 
-int searchRequest();
+#define SIZE 1500
+char bandwith[SIZE];
+int searchRequest(); 
 void server() ;
 void response_viewfile();
 void doit(void * arg) ;
 void showlist(void * arg);
 void server_download() ;
-
 void client_download() ;
+void test_bandwith();
 static void recvfrom_alarm(int signo);
-
 //define struct parameter 
 struct paramenter{
   struct sockaddr_in  clientaddr;
@@ -40,7 +42,10 @@ struct paramenter{
 
 //define main function
 int main(){
-
+if(bandwith == NULL){
+printf (" Error malloc...");
+return 1;
+}
   pthread_t tcp_id, udp_id, showlist_id;
   
 // create a new thread with attributes specified DEFAULT
@@ -173,6 +178,8 @@ int searchRequest(){
     */
     str = inet_ntoa(preply_addr.sin_addr);
     printf("<+> from %s :\n%s \n",str,recvString);
+  strcat(bandwith, str);
+  strcat(bandwith, "\n");
     result ++;
   }
   return result;
@@ -273,7 +280,7 @@ void doit(void * arg){
     return ;
   }
   else{
-		//chuyen vi tri con tro doc file ve dau file.
+    //chuyen vi tri con tro doc file ve dau file.
     fseek (finput,0,SEEK_SET);
 	
     char * ch;
@@ -296,6 +303,7 @@ void doit(void * arg){
 
 void client_download(){
 	// nhap dia chi server
+printf(" Recommend IP .... \n %s\n", bandwith);
   char serverIP[15];
   printf("Nhap dia chi ip cua server : ");
   scanf("%s",serverIP);
@@ -650,5 +658,8 @@ void showlist(void * arg){
   }
   fclose(finput);
 }
+
+
+
 
 
