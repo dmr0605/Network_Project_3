@@ -7,19 +7,20 @@ Programming project 3rd
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h> 
-#include <signal.h>
+
 #include <unistd.h>
 #include <errno.h>
 #include <pthread.h>
 
 
 int searchRequest();
-void * server(void * arg) ;
-void * doit(void * arg) ;
-void * server_download(void *arg) ;
+void server() ;
+void doit(void * arg) ;
+void server_download() ;
 void client_download() ;
 static void recvfrom_alarm(int signo);
 
@@ -36,9 +37,9 @@ int main(){
 	pthread_t tcp_id ;
 	pthread_t udp_id ;
 	// luong dap ung yeu cau download .
-	pthread_create(&tcp_id,NULL,server_download,NULL) ;
+	pthread_create(&tcp_id,NULL,(void*)server_download,NULL) ;
 	// luong dap ung yeu cau tim kiem .
-	pthread_create(&udp_id,NULL,server,NULL) ;
+	pthread_create(&udp_id,NULL,(void*)server,NULL) ;
 	// chuc nang request.
 	for(;;){
 		int number ;
@@ -46,12 +47,12 @@ int main(){
 		if(number == 0){
 			printf("There're no server which named contain keyword entering... \n") ;
 			printf("----------------------------------------------------------\n") ;
-			printf("Nhap 1 de tim kiem voi tu khoa khac \n") ;
-			printf("Nhap so bat ky (khac 1) de thoat \n") ;
+			printf("Enter another keyword searching.... \n") ;
+			printf("Enter idiot number to escape (Not number 1 )... \n") ;
 			fflush(stdin) ;
 			int c ;
 			scanf("%d",&c) ;
-			if(c == 1)
+			if(c == 0)
 				continue ;
 			else
 				exit(1) ;
@@ -82,46 +83,45 @@ int main(){
 static void recvfrom_alarm(int signo){
 	return;
 }
-
 int searchRequest(){
-	int result = 0;
-	int sockfd ;
-	int nBytes ;
-	int len;
-	int len_sock_server ;
+  int result = 0;
+  int sockfd;
+  int nBytes;
+  int len;
+  int len_sock_server;
 
-	struct sockaddr_in serveraddr ; 
-	len_sock_server = sizeof(serveraddr) ;
+  struct sockaddr_in serveraddr;
+  len_sock_server = sizeof(serveraddr);
 
-	bzero(&serveraddr, len_sock_server) ;
-     serveraddr.sin_family = AF_INET ;
-     serveraddr.sin_port = htons(12345) ;
-     serveraddr.sin_addr.s_addr = inet_addr("255.255.255.255");
+  bzero(&serveraddr, len_sock_server);
+  serveraddr.sin_family = AF_INET;
+  serveraddr.sin_port = htons(12345);
+  serveraddr.sin_addr.s_addr = inet_addr("255.255.255.255");
 	
-	char fileName[25] ;
-	if((sockfd = socket(AF_INET,SOCK_DGRAM,0)) < 0){
-		perror("error when create socket") ;
-		return ;
-	}
+  char fileName[25];
+  if((sockfd = socket(AF_INET,SOCK_DGRAM,0)) < 0){
+    perror("error when create socket");
+    return 1; //number signal error creating...
+  }
 
-	printf("Nhap ten file can tim kiem : \n") ;
-	scanf("%s",fileName);
-	
-	// thiet lap thuoc tinh broadcast cho socket.
-	const int on = 1 ;
-	setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &on, sizeof(on)) ;
-	// ham sysv_signal thay the ham signal 
-	sysv_signal(SIGALRM, recvfrom_alarm);
-	nBytes = sendto(sockfd, fileName, strlen(fileName), 0,(struct sockaddr*) &serveraddr , sizeof(serveraddr));
-	alarm(5) ;
+  printf("Nhap ten file can tim kiem : \n");
+  scanf("%s",fileName);
+// thiet lap thuoc tinh broadcast cho socket.
+  const int on = 1;
+  setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &on, sizeof(on));
+// ham sysv_signal thay the ham signal
 
-	for(;;){
-		struct sockaddr_in	preply_addr ; 
-		len = sizeof(preply_addr) ;
-		char * recvString ;
-		recvString = (char*)malloc(1500) ;
-		int n ;
-		n = recvfrom(sockfd, recvString, 1500, 0, (struct sockaddr*)&preply_addr, &len);	
+  sysv_signal(SIGALRM, recvfrom_alarm);
+  nBytes = sendto(sockfd, fileName, strlen(fileName), 0,(struct sockaddr*) &serveraddr , sizeof(serveraddr));
+  alarm(5);
+
+  for(;;){
+    struct sockaddr_in	preply_addr;
+    len = sizeof(preply_addr);
+    char * recvString;
+    recvString = (char*)malloc(1500);
+    int n;
+    n = recvfrom(sockfd, recvString, 1500, 0, (struct sockaddr*)&preply_addr, (socklen_t*)&len);	
 		if(n < 0){
 			if (errno == EINTR){
 				break;
@@ -129,7 +129,7 @@ int searchRequest(){
 			else
 				continue;
 		}
- 		char out[128];
+ 		//char out[128];
 		const char *str;
 		str = (char*)malloc(50) ;
 		str = inet_ntoa(preply_addr.sin_addr) ;
@@ -140,7 +140,7 @@ int searchRequest(){
 }
 
 
-void * server(void * arg){
+void server(){
 	pthread_detach(pthread_self()) ;
 	int fd ;
 	int nBytes ;	
@@ -172,7 +172,7 @@ void * server(void * arg){
 		// nhan ten file tu may khach.
 		char * fileName ;
 		fileName = (char*)malloc(25) ;
-		nBytes = recvfrom(fd, fileName, 25, 0 ,(struct sockaddr*) &clientaddr, &len_sock_client);
+		nBytes = recvfrom(fd, fileName, 25, 0 ,(struct sockaddr*) &clientaddr, (socklen_t*) &len_sock_client);
 		if(nBytes < 0) {	
 			if(errno == EINTR){
 				printf("server : SIGALRM : \n") ;
@@ -192,7 +192,7 @@ void * server(void * arg){
 		paramenters.clientaddr = clientaddr ;
 
 		// tao thread xu li viec tra loi request tu cac may.
-		int t = pthread_create(&newThread,NULL,doit,(void *)&paramenters) ;
+		int t = pthread_create(&newThread,NULL,(void*) doit,(void *)&paramenters) ;
 		if(t != 0){
 			perror("could not create new thread\n") ;
 		}
@@ -200,52 +200,52 @@ void * server(void * arg){
 }
 
 
-void * doit(void * arg){
-	pthread_detach(pthread_self()) ;
-    	int nbyte ;
-	long size = 0;
+void doit(void * arg){
+  pthread_detach(pthread_self());
+  int nbyte;
+  long size = 0;
 
-	struct paramenter * assig ;
-	assig = (struct paramenter *)arg ;
+  struct paramenter * assig;
+  assig = (struct paramenter *)arg;
 
-	char buff[100] = "ls /tmp/k51mmt/ |grep " ;
-	strcat(buff,assig->fileName) ;
-	char buff2[] = " > newfile" ;
-	strcat(buff,buff2);
-    	system(buff);
+  char buff[100] = "ls /tmp/k51mmt/ |grep ";
+  strcat(buff,assig->fileName);
+  char buff2[] = " > newfile";
+  strcat(buff,buff2);
+  system(buff);
 	
 	// mo file newfile.
-     FILE * finput ;
-    	finput = fopen("newfile", "r")  ;
-	if(finput == NULL){
-		perror("Error when open new file") ;
+  FILE * finput;
+  finput = fopen("newfile", "r") ;
+  if(finput == NULL){
+    perror("Error when open new file");
 		return ;
-	}
-	//kiem tra file rong hay khong.
-	fseek (finput, 0, SEEK_END);
-	size = ftell(finput);
+  }
+	//kiem tra file rong hay khong. 
+  fseek (finput, 0, SEEK_END);
+  size = ftell(finput);
 
-	if(size == 0){
-		return ;
-	}
-	else{
+  if(size == 0){
+    return ;
+  }
+  else{
 		//chuyen vi tri con tro doc file ve dau file.
-		fseek (finput,0,SEEK_SET) ;
+    fseek (finput,0,SEEK_SET);
 	
-    		char * ch ;
-		ch = (char *) malloc(1500) ;
-		int n ;
-		n = fread(ch,sizeof(char),1500,finput) ;
-		if(n < 0){
-			printf("can't read file\n") ;
-		}
-		// gui du lieu toi may da hoi.
-		nbyte = sendto((assig->fd),ch,n,0,(struct sockaddr*)&(assig->clientaddr),sizeof((assig->clientaddr))) ;
-		if(nbyte < 0){
-			perror("error when send data\n") ;
-		}
-	}
-	fclose(finput) ;
+    char * ch;
+    ch = (char *) malloc(1500);
+    int n;
+    n = fread(ch,sizeof(char),1500,finput);
+    if(n < 0){
+      printf("can't read file\n");
+    }
+    // gui du lieu toi may da hoi.
+    nbyte = sendto((assig->fd),ch,n,0,(struct sockaddr*)&(assig->clientaddr),sizeof((assig->clientaddr)));
+    if(nbyte < 0){
+      perror("error when send data\n");
+    }
+  }
+  fclose(finput);
 }
 
 
@@ -257,7 +257,7 @@ void client_download(){
 	scanf("%s",serverIP) ;
 
 	// khai bao socket 
-	int sockfd ;
+
 	int nbytes ;
 
 	// tao ket noi tcp de download file.
@@ -317,7 +317,7 @@ void client_download(){
 }
 
 // Ham download phuc vu yeu cau download mot file voi ten chinh xac.
-void * server_download(void * arg){
+void server_download(){
 	pthread_detach(pthread_self()) ;
 	// tao mot socket tcp cho viec truyen du lieu.
 	int serverSocket ;
@@ -325,7 +325,7 @@ void * server_download(void * arg){
 	serverSocket = socket(AF_INET,SOCK_STREAM,0) ;
 	if(serverSocket < 0){
 		perror("Error of create a new socket") ;
-		return  ;
+		return ;
 	}
 
 	// dat che do su dung lai dia chi 
@@ -361,7 +361,7 @@ void * server_download(void * arg){
 	for(;;){	
 		int nbyte ;
 		// chap nhan ket noi tu client.
-		newsocket = accept(serverSocket,(struct sockaddr*)&sock_addr_client,&len_sock_client) ;
+		newsocket = accept(serverSocket,(struct sockaddr*)&sock_addr_client,(socklen_t*)&len_sock_client) ;
 		if(newsocket < 0 ){
 			perror("Error when accept a connection from client") ;
 			return ;

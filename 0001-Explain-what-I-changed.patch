@@ -1,0 +1,761 @@
+From 8181b4bd8b876e397b7ef004765da27a23f1695b Mon Sep 17 00:00:00 2001
+From: dmr0605 <dmr0605@gmail.com>
+Date: Wed, 23 Dec 2009 08:51:54 -0500
+Subject: [PATCH] Explain what I changed
+
+---
+ 0001-This-is-the-code-i-copy-from-ndhoa172.patch |  703 ++++++++++++++++++++++
+ server/server.c                                  |   10 +-
+ 2 files changed, 712 insertions(+), 1 deletions(-)
+ create mode 100644 0001-This-is-the-code-i-copy-from-ndhoa172.patch
+
+diff --git a/0001-This-is-the-code-i-copy-from-ndhoa172.patch b/0001-This-is-the-code-i-copy-from-ndhoa172.patch
+new file mode 100644
+index 0000000..0bf59ad
+--- /dev/null
++++ b/0001-This-is-the-code-i-copy-from-ndhoa172.patch
+@@ -0,0 +1,703 @@
++From faa2bf03b3e7f7e0fdb71fcf91a0fd7d5318eeed Mon Sep 17 00:00:00 2001
++From: dmr0605 <dmr0605@gmail.com>
++Date: Wed, 23 Dec 2009 08:20:31 -0500
++Subject: [PATCH] This is the code i copy from ndhoa172...
++
++---
++ Makefile                    |    5 +
++ "b\303\241o c\303\241o.doc" |  Bin 0 -> 50688 bytes
++ server/server.c             |  403 +++++++++++++++++++++++++++++++++++++++++++
++ 3 files changed, 408 insertions(+), 0 deletions(-)
++ create mode 100644 Makefile
++ create mode 100644 "b\303\241o c\303\241o.doc"
++ create mode 100644 server/server.c
++
++diff --git a/Makefile b/Makefile
++new file mode 100644
++index 0000000..7d70450
++--- /dev/null
+++++ b/Makefile
++@@ -0,0 +1,5 @@
+++all:
+++	gcc -o ./server/server.c ./server/server -pthread
+++  
+++clean:
+++	rm -f ./server/server 
++\ No newline at end of file
++diff --git "a/b\303\241o c\303\241o.doc" "b/b\303\241o c\303\241o.doc"
++new file mode 100644
++index 0000000000000000000000000000000000000000..f55aa6c61ed7eb7f51a384d17470f58a838908ec
++GIT binary patch
++literal 50688
++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
++Ttvssp-C(`YS^EELQsDmp&tB<j
++
++literal 0
++HcmV?d00001
++
++diff --git a/server/server.c b/server/server.c
++new file mode 100644
++index 0000000..43990f6
++--- /dev/null
+++++ b/server/server.c
++@@ -0,0 +1,403 @@
+++#include <stdio.h>
+++#include <string.h>
+++#include <stdlib.h>
+++#include <sys/types.h>
+++#include <sys/socket.h>
+++#include <netinet/in.h>
+++#include <arpa/inet.h> 
+++#include <signal.h>
+++#include <unistd.h>
+++#include <errno.h>
+++#include <pthread.h>
+++
+++
+++int searchRequest();
+++void * server(void * arg) ;
+++void * doit(void * arg) ;
+++void * server_download(void *arg) ;
+++void client_download() ;
+++static void recvfrom_alarm(int signo);
+++
+++struct paramenter{
+++	struct sockaddr_in  clientaddr ;
+++	int fd ;
+++	char * fileName ;
+++};
+++
+++int main(){
+++	pthread_t tcp_id ;
+++	pthread_t udp_id ;
+++	// luong dap ung yeu cau download .
+++	pthread_create(&tcp_id,NULL,server_download,NULL) ;
+++	// luong dap ung yeu cau tim kiem .
+++	pthread_create(&udp_id,NULL,server,NULL) ;
+++	// chuc nang request.
+++	for(;;){
+++		int number ;
+++		number = searchRequest() ;
+++		if(number == 0){
+++			printf("Khong co server nao co ten file chua tu khoa da nhap vao \n") ;
+++			printf("----------------------------------------------------------\n") ;
+++			printf("Nhap 1 de tim kiem voi tu khoa khac \n") ;
+++			printf("Nhap so bat ky (khac 1) de thoat \n") ;
+++			fflush(stdin) ;
+++			int c ;
+++			scanf("%d",&c) ;
+++			if(c == 1)
+++				continue ;
+++			else
+++				exit(1) ;
+++		}
+++		else{
+++			printf("Nhap 1 de tim kiem voi tu khoa khac \n") ;
+++			printf("Nhap 2 de xem list file phu hop download file tu 1 server xac dinh\n") ;
+++			printf("Nhap so bat ky (khac 1,2) de thoat \n") ;
+++			fflush(stdin) ;
+++			int c ;
+++			scanf("%d",&c) ;
+++			switch(c){
+++				case 1 :
+++					continue ;
+++				case 2 :
+++					client_download() ;
+++					continue ;
+++				default :
+++					exit(1) ;
+++			}
+++		}
+++		printf("--------------------------------------------------\n") ;
+++	}
+++     return 0 ;
+++}
+++
+++
+++static void recvfrom_alarm(int signo){
+++	return;
+++}
+++
+++int searchRequest(){
+++	int result = 0;
+++	int sockfd ;
+++	int nBytes ;
+++	int len;
+++	int len_sock_server ;
+++
+++	struct sockaddr_in serveraddr ; 
+++	len_sock_server = sizeof(serveraddr) ;
+++
+++	bzero(&serveraddr, len_sock_server) ;
+++     serveraddr.sin_family = AF_INET ;
+++     serveraddr.sin_port = htons(12345) ;
+++     serveraddr.sin_addr.s_addr = inet_addr("255.255.255.255");
+++	
+++	char fileName[25] ;
+++	if((sockfd = socket(AF_INET,SOCK_DGRAM,0)) < 0){
+++		perror("error when create socket") ;
+++		return ;
+++	}
+++
+++	printf("Nhap ten file can tim kiem : \n") ;
+++	scanf("%s",fileName);
+++	
+++	// thiet lap thuoc tinh broadcast cho socket.
+++	const int on = 1 ;
+++	setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST, &on, sizeof(on)) ;
+++	// ham sysv_signal thay the ham signal 
+++	sysv_signal(SIGALRM, recvfrom_alarm);
+++	nBytes = sendto(sockfd, fileName, strlen(fileName), 0,(struct sockaddr*) &serveraddr , sizeof(serveraddr));
+++	alarm(5) ;
+++
+++	for(;;){
+++		struct sockaddr_in	preply_addr ; 
+++		len = sizeof(preply_addr) ;
+++		char * recvString ;
+++		recvString = (char*)malloc(1500) ;
+++		int n ;
+++		n = recvfrom(sockfd, recvString, 1500, 0, (struct sockaddr*)&preply_addr, &len);	
+++		if(n < 0){
+++			if (errno == EINTR){
+++				break;
+++			}
+++			else
+++				continue;
+++		}
+++ 		char out[128];
+++		const char *str;
+++		str = (char*)malloc(50) ;
+++		str = inet_ntoa(preply_addr.sin_addr) ;
+++		printf("<+> from %s :\n%s \n",str,recvString) ;
+++		result ++ ;
+++	}	
+++	return result ;
+++}
+++
+++
+++void * server(void * arg){
+++	pthread_detach(pthread_self()) ;
+++	int fd ;
+++	int nBytes ;	
+++
+++     if((fd = socket(AF_INET,SOCK_DGRAM,0)) < 0){
+++		perror("error when create socket") ;
+++          exit(1) ;
+++     }
+++
+++	// khai bao cau truc dia chi cua server , client
+++     struct sockaddr_in serveraddr ;
+++	struct sockaddr_in clientaddr ;
+++	int len_sock_server = sizeof(serveraddr) ;
+++	int len_sock_client = sizeof(clientaddr) ;
+++
+++	bzero(&serveraddr, len_sock_server) ;
+++     serveraddr.sin_family = AF_INET ;
+++     serveraddr.sin_port = htons(12345) ;
+++     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+++
+++	// lang nghe ket noi 
+++	if(bind(fd, (struct sockaddr*) &serveraddr,len_sock_server) < 0){
+++		perror("could not open socket") ;
+++		exit(1) ;
+++	}
+++
+++	for(;;){
+++		pthread_t newThread ;
+++		// nhan ten file tu may khach.
+++		char * fileName ;
+++		fileName = (char*)malloc(25) ;
+++		nBytes = recvfrom(fd, fileName, 25, 0 ,(struct sockaddr*) &clientaddr, &len_sock_client);
+++		if(nBytes < 0) {	
+++			if(errno == EINTR){
+++				printf("server : SIGALRM : \n") ;
+++				continue ;
+++			}
+++			else{
+++				perror("recvfrom of server : "); 
+++				break;
+++			}
+++		}
+++		
+++		// gan gia tri cho cac thanh phan cua bien cau truc paramenter.
+++		struct paramenter paramenters ;
+++		paramenters.fd = fd ;
+++		paramenters.fileName = (char*)malloc(25) ;
+++		strcpy(paramenters.fileName,fileName) ;
+++		paramenters.clientaddr = clientaddr ;
+++
+++		// tao thread xu li viec tra loi request tu cac may.
+++		int t = pthread_create(&newThread,NULL,doit,(void *)&paramenters) ;
+++		if(t != 0){
+++			perror("could not create new thread\n") ;
+++		}
+++	}
+++}
+++
+++
+++void * doit(void * arg){
+++	pthread_detach(pthread_self()) ;
+++    	int nbyte ;
+++	long size = 0;
+++
+++	struct paramenter * assig ;
+++	assig = (struct paramenter *)arg ;
+++
+++	char buff[100] = "ls /tmp/k51mmt/ |grep " ;
+++	strcat(buff,assig->fileName) ;
+++	char buff2[] = " > newfile" ;
+++	strcat(buff,buff2);
+++    	system(buff);
+++	
+++	// mo file newfile.
+++     FILE * finput ;
+++    	finput = fopen("newfile", "r")  ;
+++	if(finput == NULL){
+++		perror("Error when open new file") ;
+++		return ;
+++	}
+++	//kiem tra file rong hay khong.
+++	fseek (finput, 0, SEEK_END);
+++	size = ftell(finput);
+++
+++	if(size == 0){
+++		return ;
+++	}
+++	else{
+++		//chuyen vi tri con tro doc file ve dau file.
+++		fseek (finput,0,SEEK_SET) ;
+++	
+++    		char * ch ;
+++		ch = (char *) malloc(1500) ;
+++		int n ;
+++		n = fread(ch,sizeof(char),1500,finput) ;
+++		if(n < 0){
+++			printf("can't read file\n") ;
+++		}
+++		// gui du lieu toi may da hoi.
+++		nbyte = sendto((assig->fd),ch,n,0,(struct sockaddr*)&(assig->clientaddr),sizeof((assig->clientaddr))) ;
+++		if(nbyte < 0){
+++			perror("error when send data\n") ;
+++		}
+++	}
+++	fclose(finput) ;
+++}
+++
+++
+++
+++void client_download(){
+++	// nhap dia chi server
+++	char serverIP[15] ;
+++	printf("Nhap dia chi ip cua server : ") ;
+++	scanf("%s",serverIP) ;
+++
+++	// khai bao socket 
+++	int sockfd ;
+++	int nbytes ;
+++
+++	// tao ket noi tcp de download file.
+++	int TCP_socket ;
+++	TCP_socket = socket(AF_INET,SOCK_STREAM,0) ;
+++	if(TCP_socket < 0){
+++		perror("Error when create socket") ;
+++		return ;
+++	}
+++
+++	// khai bao dia chi may , giao thuc tang duoi, cong cua socket.
+++	struct sockaddr_in TCP_server_addr ;
+++
+++	bzero(&TCP_server_addr,sizeof(TCP_server_addr)) ;
+++	TCP_server_addr.sin_family = AF_INET ;
+++	TCP_server_addr.sin_port = htons(54321) ;
+++	TCP_server_addr.sin_addr.s_addr = inet_addr(serverIP) ;
+++
+++	// connect toi server.
+++	if(connect(TCP_socket,(struct sockaddr*)&TCP_server_addr,sizeof(TCP_server_addr)) < 0){
+++		perror("Error when connect to server") ;
+++		return ;
+++	}
+++	
+++	char correctName[50] ;
+++	printf("Go chinh xac ten file can download : \n") ;
+++	scanf("%s",correctName) ;
+++	nbytes = send(TCP_socket,correctName,50,0) ;
+++
+++	FILE * foutput ;
+++	foutput = fopen(correctName, "wb") ;
+++	if(foutput == NULL){
+++		perror("Error when create new file") ;
+++		return ;
+++	}
+++	//nhan du lieu tu client.
+++	char * ch ;
+++	int nbyte ;
+++	for(;;){
+++		int n;
+++		ch =(char*)malloc(512) ;
+++		nbyte = recv(TCP_socket,ch,512,0) ;
+++		if(nbyte < 512){
+++			if(nbyte > 0)
+++				//n = fwrite(ch,sizeof(char),strlen(ch),foutput) ;
+++				n = fwrite(ch,sizeof(char),nbyte,foutput) ;
+++			break ;
+++		}
+++		else
+++			n = fwrite(ch,sizeof(char),512,foutput) ;
+++	}	
+++
+++	fclose(foutput) ;
+++
+++	printf("download completed \n") ;
+++	printf("----------------------------------------------------------\n") ;
+++}
+++
+++// Ham download phuc vu yeu cau download mot file voi ten chinh xac.
+++void * server_download(void * arg){
+++	pthread_detach(pthread_self()) ;
+++	// tao mot socket tcp cho viec truyen du lieu.
+++	int serverSocket ;
+++	int newsocket ;
+++	serverSocket = socket(AF_INET,SOCK_STREAM,0) ;
+++	if(serverSocket < 0){
+++		perror("Error of create a new socket") ;
+++		return  ;
+++	}
+++
+++	// dat che do su dung lai dia chi 
+++	int yes = 1;
+++     // "Address already in use" error message 
+++     if(setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1){	
+++		perror("setsockopt() error");
+++		exit(1);
+++     }
+++
+++	//
+++	// khai bao cau truc dia chi server cung nhu client.
+++	struct sockaddr_in sock_addr_server ;
+++	struct sockaddr_in sock_addr_client ;
+++	int len_sock_server = sizeof(sock_addr_server) ;
+++	int len_sock_client = sizeof(sock_addr_client) ;
+++
+++	bzero(&sock_addr_server,len_sock_server) ;
+++	sock_addr_server.sin_family = AF_INET ;
+++	sock_addr_server.sin_port = htons(54321) ;
+++	sock_addr_server.sin_addr.s_addr = htonl(INADDR_ANY) ;
+++	
+++	if(bind(serverSocket,(struct sockaddr*)&sock_addr_server,len_sock_server) < 0){
+++		perror("Error when assign address for socket") ;
+++		return ;
+++	}
+++
+++	// lang nghe kenh truyen 
+++	if(listen(serverSocket,5) < 0){
+++		perror("Error when listen connection") ;
+++		return ;
+++	}
+++	for(;;){	
+++		int nbyte ;
+++		// chap nhan ket noi tu client.
+++		newsocket = accept(serverSocket,(struct sockaddr*)&sock_addr_client,&len_sock_client) ;
+++		if(newsocket < 0 ){
+++			perror("Error when accept a connection from client") ;
+++			return ;
+++		}
+++		// nhan ten file chinh xac can download tu client.
+++		char correctName[50] ;
+++		nbyte = recv(newsocket,correctName,50,0) ;
+++		
+++		// khai bao file .
+++		FILE * fileDownload ;
+++		char filename[100] = "/tmp/k51mmt/" ;
+++		strcat(filename,correctName) ; // ham noi hai xau lai voi nhau
+++		fileDownload = fopen(filename,"rb") ;
+++		if(fileDownload == NULL){
+++			perror("Error when open new file") ;
+++			return ;
+++		}
+++	
+++		// qua trinh download
+++		char * ch ;
+++		int n = 0 ;
+++		for(;;){
+++			ch = (char*) malloc(512) ;
+++			n = fread(ch,sizeof(char),512,fileDownload) ;
+++			if(n < 512){
+++				if (n > 0){
+++					nbyte = send(newsocket,ch,n,0) ;
+++					if(nbyte < 0){
+++						perror("Error when write data") ;
+++					}
+++				}	
+++				if (feof(fileDownload)){
+++					break ;
+++				}
+++			}
+++			else {
+++				nbyte = send(newsocket,ch,512,0) ;
+++				if(nbyte < 0){
+++					perror("Error when write data") ;
+++				}
+++			}
+++		}
+++		fclose(fileDownload) ;
+++		//close(newsocket) ;
+++	}
+++}
+++
++-- 
++1.6.3.3
++
+diff --git a/server/server.c b/server/server.c
+index 43990f6..74b841a 100644
+--- a/server/server.c
++++ b/server/server.c
+@@ -1,3 +1,8 @@
++/*
++Programming project 3rd
++
++
++*/
+ #include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
+@@ -18,12 +23,15 @@ void * server_download(void *arg) ;
+ void client_download() ;
+ static void recvfrom_alarm(int signo);
+ 
++//define struct parameter 
+ struct paramenter{
+ 	struct sockaddr_in  clientaddr ;
+ 	int fd ;
+ 	char * fileName ;
+ };
+ 
++
++//define main function
+ int main(){
+ 	pthread_t tcp_id ;
+ 	pthread_t udp_id ;
+@@ -36,7 +44,7 @@ int main(){
+ 		int number ;
+ 		number = searchRequest() ;
+ 		if(number == 0){
+-			printf("Khong co server nao co ten file chua tu khoa da nhap vao \n") ;
++			printf("There're no server which named contain keyword entering... \n") ;
+ 			printf("----------------------------------------------------------\n") ;
+ 			printf("Nhap 1 de tim kiem voi tu khoa khac \n") ;
+ 			printf("Nhap so bat ky (khac 1) de thoat \n") ;
+-- 
+1.6.3.3
+
