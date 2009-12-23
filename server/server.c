@@ -1,3 +1,8 @@
+/*
+Programming project 3rd
+
+
+*/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -18,12 +23,15 @@ void * server_download(void *arg) ;
 void client_download() ;
 static void recvfrom_alarm(int signo);
 
+//define struct parameter 
 struct paramenter{
 	struct sockaddr_in  clientaddr ;
 	int fd ;
 	char * fileName ;
 };
 
+
+//define main function
 int main(){
 	pthread_t tcp_id ;
 	pthread_t udp_id ;
@@ -36,7 +44,7 @@ int main(){
 		int number ;
 		number = searchRequest() ;
 		if(number == 0){
-			printf("Khong co server nao co ten file chua tu khoa da nhap vao \n") ;
+			printf("There're no server which named contain keyword entering... \n") ;
 			printf("----------------------------------------------------------\n") ;
 			printf("Nhap 1 de tim kiem voi tu khoa khac \n") ;
 			printf("Nhap so bat ky (khac 1) de thoat \n") ;
